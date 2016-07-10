@@ -1,2 +1,3 @@
 # simpson
-jonah and zak's shared projects
+
+Jonah and Zak's shared projects.
