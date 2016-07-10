@@ -149,10 +149,18 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\asset\asset_loader.h" />
+    <ClInclude Include="engine\ecs\manager.h" />
+    <ClInclude Include="engine\ecs\system\base_sytsem.h" />
+    <ClInclude Include="engine\game.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\asset\asset_loader.cpp" />
+    <ClCompile Include="engine\ecs\manager.cpp" />
+    <ClCompile Include="engine\ecs\system\base_system.cpp" />
+    <ClCompile Include="engine\game.cpp" />
     <ClCompile Include="RTS.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
