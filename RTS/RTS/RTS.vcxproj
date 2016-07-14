@@ -83,12 +83,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\asset\asset_loader.h" />
+    <ClInclude Include="engine\ecs\assemblage\assemblage.h" />
+    <ClInclude Include="engine\ecs\capacity.h" />
+    <ClInclude Include="engine\ecs\component\component_list.h" />
     <ClInclude Include="engine\ecs\manager.h" />
     <ClInclude Include="engine\ecs\system\base_sytsem.h" />
     <ClInclude Include="engine\game.h" />

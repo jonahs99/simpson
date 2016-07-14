@@ -36,6 +36,15 @@
     <ClInclude Include="engine\asset\asset_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine\ecs\component\component_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ecs\capacity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ecs\assemblage\assemblage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
