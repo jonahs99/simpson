@@ -13,6 +13,11 @@ Manager::EntityHandle Manager::get_new_entity_handle() {
 
 void Manager::remove_entity(Manager::EntityHandle entity) {
 	entity_signatures[entity] = 0;
-	for (auto * system : systems)
-		system->remove_entity(entity);
+	for (auto system : systems)
+		system.second->remove_entity(entity);
+}
+
+void Manager::add_entity(Manager::EntityHandle entity) {
+	for (auto system : systems)
+		system.second->check_entity(entity);
 }

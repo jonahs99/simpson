@@ -6,19 +6,14 @@
 #include <iostream>
 #include <string>
 
-#include "engine\ecs\manager.h"
+#include "engine\game.h"
 
 int main()
 {
 
-	Manager mgr;
+	Game game;
 
-	mgr.create_component_lists<int, char, double, float>();
-	std::cout << mgr.components() << std::endl;
-
-	std::cout << mgr.get_component_list<int>()[4] << std::endl;
-
-	std::cin.get();
+	game.main_loop();
 
     return 0;
 }

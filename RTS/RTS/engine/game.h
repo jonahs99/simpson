@@ -1,10 +1,16 @@
 #pragma once
 
+#include "ecs/manager.h"
+
+#include "ecs/system/movement_system.h"
+
 class Game {
 
 public :
 
-	void init_systems();
+	Game();
+
+	void init_ecs();
 
 	void update();
 
@@ -12,6 +18,12 @@ public :
 
 private :
 
+	void init_components();
 
+	void init_systems() { };
+
+	Manager manager;
+
+	MovementSystem movement_system;
 
 };
