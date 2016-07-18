@@ -54,6 +54,9 @@
     <ClInclude Include="engine\ecs\component\movement_component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine\graphics\graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -77,5 +80,12 @@
     <ClCompile Include="engine\ecs\system\movement_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\VS_dev_lib\glew-1.13.0-win32\glew-1.13.0\bin\Release\Win32\glew32.dll" />
+    <None Include="..\..\..\..\VS_dev_lib\SDL2-devel-2.0.4-VC\SDL2-2.0.4\lib\x86\SDL2.dll" />
   </ItemGroup>
 </Project>

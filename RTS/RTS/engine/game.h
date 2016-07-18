@@ -4,6 +4,8 @@
 
 #include "ecs/system/movement_system.h"
 
+#include "graphics\graphics.h"
+
 class Game {
 
 public :
@@ -25,5 +27,7 @@ private :
 	Manager manager;
 
 	MovementSystem movement_system;
+
+	Graphics graphics;
 
 };
