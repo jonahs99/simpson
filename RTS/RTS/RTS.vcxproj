@@ -71,11 +71,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Jonah\Documents\Development\VS_dev_lib\SDL2-devel-2.0.4-VC\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Jonah\Documents\Development\VS_dev_lib\SDL2-devel-2.0.4-VC\SDL2-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>Z:\VS_dev_libs\SDL2-devel-2.0.4-VC\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>Z:\VS_dev_libs\SDL2-devel-2.0.4-VC\SDL2-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>Z:\VS_dev_libs\SDL2-devel-2.0.4-VC\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>Z:\VS_dev_libs\SDL2-devel-2.0.4-VC\SDL2-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -91,27 +93,29 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <ShowIncludes>false</ShowIncludes>
-      <AdditionalIncludeDirectories>C:\Users\Jonah\Documents\Development\VS_dev_lib\glew-1.13.0-win32\glew-1.13.0\include\GL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Z:\VS_dev_libs\glew-1.13.0\include\GL;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Jonah\Documents\Development\VS_dev_lib\glew-1.13.0-win32\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>Z:\VS_dev_libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>Z:\VS_dev_libs\glew-1.13.0\include\GL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>Z:\VS_dev_libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,10 +163,12 @@
     <ClInclude Include="engine\ecs\capacity.h" />
     <ClInclude Include="engine\ecs\component\component_list.h" />
     <ClInclude Include="engine\ecs\component\movement_component.h" />
+    <ClInclude Include="engine\ecs\component\sprite_component.h" />
     <ClInclude Include="engine\ecs\component\translate_component.h" />
     <ClInclude Include="engine\ecs\manager.h" />
     <ClInclude Include="engine\ecs\system\base_sytsem.h" />
     <ClInclude Include="engine\ecs\system\movement_system.h" />
+    <ClInclude Include="engine\ecs\system\render_system.h" />
     <ClInclude Include="engine\game.h" />
     <ClInclude Include="engine\graphics\graphics.h" />
     <ClInclude Include="stdafx.h" />
@@ -173,14 +179,15 @@
     <ClCompile Include="engine\ecs\manager.cpp" />
     <ClCompile Include="engine\ecs\system\base_system.cpp" />
     <ClCompile Include="engine\ecs\system\movement_system.cpp" />
+    <ClCompile Include="engine\ecs\system\render_system.cpp" />
     <ClCompile Include="engine\game.cpp" />
     <ClCompile Include="engine\graphics\graphics.cpp" />
     <ClCompile Include="RTS.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\VS_dev_lib\glew-1.13.0-win32\glew-1.13.0\bin\Release\Win32\glew32.dll" />
-    <None Include="..\..\..\..\VS_dev_lib\SDL2-devel-2.0.4-VC\SDL2-2.0.4\lib\x86\SDL2.dll" />
+    <None Include="glew32.dll" />
+    <None Include="SDL2.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
