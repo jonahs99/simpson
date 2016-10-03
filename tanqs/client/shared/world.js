@@ -82,7 +82,7 @@ function Tank(alive) {
 
 	this.wheelmass = 1;
 	this.maxforce = 2;
-	this.maxspeed = 9;
+	this.maxspeed = 7;
 
 	this.target = new Vec2(0,4);
 	this.wheel1 = 0;
@@ -243,5 +243,6 @@ Vec2.prototype.lerp = function(b, delta) {
 	exports.Tank = Tank;
 	exports.Vec2 = Vec2;
 	exports.Bullet = Bullet;
+	exports.clamp = clamp;
 
 }(typeof exports === 'undefined' ? this.share = {} : exports));

@@ -60,7 +60,11 @@ Game.prototype.apply_tank_update = function(update) {
 
 Game.prototype.shoot = function() {
 
-	this.socket.send_bullet(new Bullet(this.player_tank.pos.add(DirVec(this.player_tank.dir, this.player_tank.rad*2)), DirVec(this.player_tank.dir, 15)));
+	var gun_pos = this.player_tank.pos.add(DirVec(this.player_tank.dir, this.player_tank.rad*2));
+	var vel = this.player_tank.vel.add(DirVec(this.player_tank.dir, 6));
+
+	this.socket.send_bullet(new Bullet(gun_pos, vel));
+
 }
 
 // Rendering
@@ -87,7 +91,7 @@ Renderer.prototype.render_world = function() {
 	// Calculate interpolation delta
 
 	var elapsed = (new Date()).getTime() - this.last_step;
-	var delta = elapsed / this.time_step;
+	var delta = clamp(elapsed / this.time_step, 0, 1);
 
 	// Clear the canvas
 	this.context.setTransform(1, 0, 0, 1, 0, 0);
