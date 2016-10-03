@@ -1,6 +1,6 @@
 
 // Handles networking with the clients
-
+var world = require('../client/shared/world.js');
 
 exports.Net = function(simulation, io) {
 
@@ -8,6 +8,7 @@ exports.Net = function(simulation, io) {
 	this.io = io;
 
 	this.newtanks = []; // New player ids since the last client update
+	this.newbullets = []; //New bullets since the last client update!!
 
 	console.log("Network made!");
 
@@ -17,6 +18,7 @@ exports.Net = function(simulation, io) {
 
 		socket.on('disconnect', this.on_disconnect.bind(this, socket));
 		socket.on('input', this.on_input.bind(this, socket));
+		socket.on('bullet', this.on_bullet.bind(this, socket));
 
 	}.bind(this));
 
@@ -41,6 +43,14 @@ exports.Net.prototype.on_input = function(socket, msg) {
 	this.simulation.apply_tank_input(this.simulation.players[socket.id], msg);
 }
 
+exports.Net.prototype.on_bullet = function(socket, msg) {
+	var bullet = new world.Bullet(new world.Vec2(msg.x, msg.y), new world.Vec2(msg.vx, msg.vy));
+	this.simulation.world.bullets.push(bullet);
+
+	console.log(msg);
+	this.newbullets.push(msg);
+}
+
 // To clients
 
 exports.Net.prototype.join_client = function(socket, id) {
@@ -53,8 +63,9 @@ exports.Net.prototype.join_client = function(socket, id) {
 
 exports.Net.prototype.update_clients = function() {
 
-	var data = {newtanks: this.newtanks, tanks:[]};
+	var data = {newtanks: this.newtanks, tanks:[], bullets:this.newbullets};
 	this.newtanks = [];
+	this.newbullets = [];
 
 	for (var i = 0; i < this.simulation.world.tanks.length; i++) {
 

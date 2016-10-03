@@ -2,6 +2,7 @@
 function Socket(game) {
 
 	this.game = game;
+	this.game.socket = this;
 
 	this.socket = io();
 
@@ -46,6 +47,12 @@ Socket.prototype.on_update = function(data) {
 		}
 	}
 
+	for (var i = 0; i < data.bullets.length; i++) {
+		var bullet_data = data.bullets[i];
+		var bullet = new Bullet(new Vec2(bullet_data.x, bullet_data.y), new Vec2(bullet_data.vx, bullet_data.vy));
+		this.game.world.bullets.push(bullet);
+	}
+
 	this.game.renderer.advance_time_step();
 
 }
@@ -61,4 +68,11 @@ Socket.prototype.send_input = function() {
 
 	this.socket.emit('input', data);
 
+}
+
+Socket.prototype.send_bullet = function(bullet) {
+
+	var data = {x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y};
+
+	this.socket.emit('bullet', data);
 }

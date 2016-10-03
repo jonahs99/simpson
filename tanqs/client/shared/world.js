@@ -31,8 +31,17 @@ World.prototype.update = function() {
 			tank.pos.mclampxy(-1000,1000,-1000,1000);
 		}
 
-		//this.tanks[i].walk();
-		//this.tanks[i].pos.mclampxy(-1000, 1000, -1000, 1000);
+	}
+
+}
+
+World.prototype.update_bullets = function() {
+
+	for (var i = 0; i < this.bullets.length; i++) {
+
+		var bullet = this.bullets[i];
+		bullet.pos.madd(bullet.vel);
+
 	}
 
 }
@@ -137,6 +146,12 @@ Tank.prototype.steer = function() {
 
 };
 
+function Bullet(pos, vel) {
+
+	this.pos = pos;
+	this.vel = vel;
+}
+
 // Vector class and Vector math
 
 function Vec2(x, y) {
@@ -227,5 +242,6 @@ Vec2.prototype.lerp = function(b, delta) {
 	exports.World = World;
 	exports.Tank = Tank;
 	exports.Vec2 = Vec2;
+	exports.Bullet = Bullet;
 
 }(typeof exports === 'undefined' ? this.share = {} : exports));

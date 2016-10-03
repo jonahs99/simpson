@@ -7,6 +7,7 @@ function Game(canvas) {
 	this.player_id = -1;
 	this.player_tank = null;
 	this.renderer = new Renderer(canvas, this);
+	this.socket = null;
 
 	this.mouse = new Vec2(200, 200);
 
@@ -29,7 +30,9 @@ Game.prototype.update = function() {
 
 	}
 
-	this.frame++;
+	this.world.update_bullets();
+
+	this.frame++;          
 
 };
 
@@ -53,6 +56,11 @@ Game.prototype.apply_tank_update = function(update) {
 	tank.steer.x = update.sx; tank.steer.y = update.sy;
 	tank.wheel1 = update.w1; tank.wheel2 = update.w2;
 
+}
+
+Game.prototype.shoot = function() {
+
+	this.socket.send_bullet(new Bullet(this.player_tank.pos.add(DirVec(this.player_tank.dir, this.player_tank.rad*2)), DirVec(this.player_tank.dir, 15)));
 }
 
 // Rendering
@@ -104,10 +112,15 @@ Renderer.prototype.render_world = function() {
 	for (var i = 0; i < this.world.tanks.length; i++) {
 		var tank = this.world.tanks[i];
 		if (tank.alive) {
-			this.render_tank(this.world.tanks[i], delta);
+			this.render_tank(tank, delta);
 		}
 	}
 
+	//Draw bullets
+	for (var i = 0; i < this.world.bullets.length; i++) {
+		var bullet = this.world.bullets[i];
+		this.render_bullet(bullet);
+	}
 
 	//Draw cursor
 	this.context.fillStyle = '#28f';
@@ -144,3 +157,16 @@ Renderer.prototype.render_tank = function(tank, delta) {
 	this.context.translate(-lerp_pos.x, -lerp_pos.y);
 
 };
+
+Renderer.prototype.render_bullet = function(bullet) {
+
+	this.context.fillStyle = '#893DCC';
+	this.context.lineWidth = 3;
+	this.context.strokeStyle = '#B076CC';
+
+	this.context.beginPath();
+	this.context.arc(bullet.pos.x, bullet.pos.y, 5, 0, 2*Math.PI);
+	this.context.fill();
+	this.context.stroke();
+
+}

@@ -14,6 +14,11 @@ document.onmousemove = function(evt) {
     game.mouse = (new Vec2(evt.clientX - rect.left, evt.clientY - rect.top)).sub(game.renderer.camera.translate);
 };
 
+document.onclick = function(evt) {
+	game.shoot();
+	
+}
+
 window.onresize = function(evt) {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
