@@ -4,6 +4,7 @@
 function Game(canvas) {
 
 	this.world = new World();
+	this.player_id = -1;
 	this.player_tank = null;
 	this.renderer = new Renderer(canvas, this);
 
@@ -15,24 +16,17 @@ function Game(canvas) {
 
 Game.prototype.update = function() {
 
-	this.renderer.camera.translate = (new Vec2(canvas.width / 2, canvas.height / 2)).sub(this.player_tank.pos);
-
 	if (this.player_tank) {
+		this.renderer.camera.translate = (new Vec2(canvas.width / 2, canvas.height / 2)).sub(this.player_tank.pos);
+
 		var mouse_dif = this.mouse.sub(this.player_tank.pos);
-		this.player_tank.steer_to(mouse_dif);
-	}
+		
+		this.player_tank.steer();
+		this.player_tank.walk();
+		this.player_tank.pos.mclampxy(-1000,1000,-1000,1000);
 
-	for (var i = 0; i < this.world.tanks.length; i++) {
-		this.world.tanks[i].walk();
-		this.world.tanks[i].pos.mclampxy(-1000, 1000, -1000, 1000);
-	}
-
-	if (this.player_tank) {
 		this.mouse = this.player_tank.pos.add(mouse_dif);
-	}
 
-	if (this.frame % 60 == 0) {
-		//this.mouse = new Vec2(Math.random() * 800 - 400, Math.random() * 800 - 400);
 	}
 
 	this.frame++;
@@ -46,6 +40,21 @@ Game.prototype.loop = function() {
 
 };
 
+Game.prototype.apply_tank_update = function(update) {
+
+	var tank = this.world.tanks[update.id];
+
+	tank.last_pos = new Vec2(tank.pos.x, tank.pos.y);
+	tank.last_dir = tank.dir;
+
+	tank.alive = update.alive;
+	tank.pos.x = update.x; tank.pos.y = update.y;
+	tank.dir = update.dir;
+	tank.steer.x = update.sx; tank.steer.y = update.sy;
+	tank.wheel1 = update.w1; tank.wheel2 = update.w2;
+
+}
+
 // Rendering
 
 function Renderer(canvas, game) {
@@ -56,9 +65,21 @@ function Renderer(canvas, game) {
 	this.world = game.world;
 	this.camera = { translate: new Vec2(canvas.width / 2, canvas.height / 2), scale: 1 };
 
+	this.last_step = (new Date()).getTime();
+	this.time_step = 100;
+
+}
+
+Renderer.prototype.advance_time_step = function() {
+	this.last_step = (new Date()).getTime();
 }
 
 Renderer.prototype.render_world = function() {
+
+	// Calculate interpolation delta
+
+	var elapsed = (new Date()).getTime() - this.last_step;
+	var delta = elapsed / this.time_step;
 
 	// Clear the canvas
 	this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -81,7 +102,10 @@ Renderer.prototype.render_world = function() {
 
 	//Draw tanks
 	for (var i = 0; i < this.world.tanks.length; i++) {
-		this.render_tank(this.world.tanks[i]);
+		var tank = this.world.tanks[i];
+		if (tank.alive) {
+			this.render_tank(this.world.tanks[i], delta);
+		}
 	}
 
 
@@ -91,10 +115,13 @@ Renderer.prototype.render_world = function() {
 
 };
 
-Renderer.prototype.render_tank = function(tank) {
+Renderer.prototype.render_tank = function(tank, delta) {
 
-	this.context.translate(tank.pos.x, tank.pos.y);
-	this.context.rotate(tank.dir);
+	var lerp_pos = tank == this.game.player_tank ? tank.pos : tank.last_pos.lerp(tank.pos, delta);
+	var lerp_dir = tank == this.game.player_tank ? tank.dir : (tank.last_dir * (1-delta) + tank.dir * delta);
+
+	this.context.translate(lerp_pos.x, lerp_pos.y);
+	this.context.rotate(lerp_dir);
 
 	this.context.fillStyle = '#f28';
 	this.context.lineWidth = 4;
@@ -113,7 +140,7 @@ Renderer.prototype.render_tank = function(tank) {
 	this.context.fill();
 	this.context.stroke();
 
-	this.context.rotate(-tank.dir);
-	this.context.translate(-tank.pos.x, -tank.pos.y);
+	this.context.rotate(-lerp_dir);
+	this.context.translate(-lerp_pos.x, -lerp_pos.y);
 
 };

@@ -8,8 +8,6 @@ canvas.style.backgroundColor = '#222';
 
 var game = new Game(canvas);
 
-game.world.tanks.push(new Tank());
-game.player_tank = game.world.tanks[0];
 
 document.onmousemove = function(evt) {
 	var rect = canvas.getBoundingClientRect();
@@ -21,4 +19,7 @@ window.onresize = function(evt) {
 	canvas.height = window.innerHeight;
 };
 
+var socket = new Socket(game);
+
+setInterval(socket.send_input.bind(socket), 100);
 setInterval(game.loop.bind(game), 20);

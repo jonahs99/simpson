@@ -20,21 +20,64 @@ function World() {
 
 }
 
+World.prototype.update = function() {
+
+	for (var i = 0; i < this.tanks.length; i++) {
+
+		var tank = this.tanks[i];
+		if (tank.alive) {
+			tank.steer();
+			tank.walk();
+			tank.pos.mclampxy(-1000,1000,-1000,1000);
+		}
+
+		//this.tanks[i].walk();
+		//this.tanks[i].pos.mclampxy(-1000, 1000, -1000, 1000);
+	}
+
+}
+
+World.prototype.new_tank = function() {
+
+	for (var id = 0; id < this.tanks.length; id++) {
+		if (!this.tanks[id].alive) {
+			this.tanks[id] = new Tank(true);
+			return id;
+		}
+	}
+
+	this.tanks.push(new Tank(true));
+	return this.tanks.length - 1;
+
+}
+
+World.prototype.kill_tank = function(id) {
+
+	this.tanks[id].alive = false;
+
+}
+
 // Tank Class
 
-function Tank() {
+function Tank(alive) {
+
+	this.alive = alive || false;
 
 	this.pos = new Vec2();
 	this.dir = 0;
 	this.rad = 20;
 
+	// For interpolation
+	this.last_pos = new Vec2();
+	this.last_dir = 0;
+
+	this.wheelmass = 1;
+	this.maxforce = 2;
+	this.maxspeed = 9;
+
+	this.target = new Vec2(0,4);
 	this.wheel1 = 0;
 	this.wheel2 = 0;
-
-	this.wheelmass = 2;
-	this.maxforce = 4;
-	this.maxspeed = 10;
-
 	this.vel = new Vec2();
 	this.rotvel = 0;
 
@@ -57,12 +100,12 @@ Tank.prototype.apply_wheel_force = function(f1, f2) {
 
 };
 
-Tank.prototype.steer_to = function(target) {
+Tank.prototype.steer = function() {
 
 	var dir_vec = DirVec(this.dir);
 
-	var dot = dir_vec.unit().dot(target.unit());
-	var sdir = dir_vec.dot(target.norm()) > 0 ? false : true; // direction to steer (true = clockwise)
+	var dot = dir_vec.unit().dot(this.target.unit());
+	var sdir = dir_vec.dot(this.target.norm()) > 0 ? false : true; // direction to steer (true = clockwise)
 
 	//console.log(sdir);
 
@@ -83,7 +126,7 @@ Tank.prototype.steer_to = function(target) {
 		w2 = -w2;
 	}
 
-	var speed = clamp(target.mag() / 400, 0, 1);
+	var speed = clamp(this.target.mag() / 200, 0, 1);
 	w1 *= speed;
 	w2 *= speed;
 
@@ -172,6 +215,9 @@ Vec2.prototype.mag = function() {
 Vec2.prototype.manhattan = function() {
 	return Math.abs(this.x) + Math.abs(this.y);
 };
+Vec2.prototype.lerp = function(b, delta) {
+	return this.scale(1 - delta).add(b.scale(delta));
+};
 
 
 // Export classes so that server can see inside this module
@@ -179,6 +225,7 @@ Vec2.prototype.manhattan = function() {
 (function(exports){
 
 	exports.World = World;
+	exports.Tank = Tank;
 	exports.Vec2 = Vec2;
 
 }(typeof exports === 'undefined' ? this.share = {} : exports));
