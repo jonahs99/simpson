@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="./style.css">
+	</head>
+
+	<body>
+
+		<canvas id="canvas">
+			Your browser does not support the HTML5 canvas tag.
+		</canvas>
+
+		<div id="splash">
+			<p>tanqs.io</p>
+			<form id="nick_form">
+				<input id="nick" type="text" placeholder="enter a nickname">
+				<input type="submit" value="join!">
+			</form>
+		</div>
+
+		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="./shared/shared.js"></script>
+		<script src="./client/world.js"></script>
+		<script src="./client/graphics.js"></script>
+		<script src="./client/client.js"></script>
+		<script src="./client/game.js"></script>
+
+	</body>
+
+</html>

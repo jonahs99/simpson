@@ -15,6 +15,8 @@ function Socket(game) {
 
 Socket.prototype.on_join = function(data) {
 
+	this.game.world.reset();
+
 	for (var i = 0; i < data.n_tanks; i++) {
 		this.game.world.new_tank(false);
 	}
@@ -49,8 +51,10 @@ Socket.prototype.on_update = function(data) {
 
 	for (var i = 0; i < data.bullets.length; i++) {
 		var bullet_data = data.bullets[i];
-		var bullet = new Bullet(new Vec2(bullet_data.x, bullet_data.y), new Vec2(bullet_data.vx, bullet_data.vy));
-		this.game.world.bullets.push(bullet);
+		var bullet = new Bullet(new Vec2(bullet_data.x, bullet_data.y));
+		bullet.vel = new Vec2(bullet_data.vx, bullet_data.vy);
+		this.game.world.add_bullet(bullet);
+		console.log(this.game.world.bullets.length);
 	}
 
 	this.game.renderer.advance_time_step();
@@ -70,9 +74,9 @@ Socket.prototype.send_input = function() {
 
 }
 
-Socket.prototype.send_bullet = function(bullet) {
+Socket.prototype.send_bullet = function(id) {
 
-	var data = {x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y};
-
+	var data = {id: id};
 	this.socket.emit('bullet', data);
+
 }

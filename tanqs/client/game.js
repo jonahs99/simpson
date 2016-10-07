@@ -58,15 +58,6 @@ Game.prototype.apply_tank_update = function(update) {
 
 }
 
-Game.prototype.shoot = function() {
-
-	var gun_pos = this.player_tank.pos.add(DirVec(this.player_tank.dir, this.player_tank.rad*2));
-	var vel = this.player_tank.vel.add(DirVec(this.player_tank.dir, 6));
-
-	this.socket.send_bullet(new Bullet(gun_pos, vel));
-
-}
-
 // Rendering
 
 function Renderer(canvas, game) {
@@ -123,7 +114,9 @@ Renderer.prototype.render_world = function() {
 	//Draw bullets
 	for (var i = 0; i < this.world.bullets.length; i++) {
 		var bullet = this.world.bullets[i];
-		this.render_bullet(bullet);
+		if (bullet.alive) {
+			this.render_bullet(bullet);
+		}
 	}
 
 	//Draw cursor

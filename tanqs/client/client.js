@@ -8,6 +8,12 @@ canvas.style.backgroundColor = '#222';
 
 var game = new Game(canvas);
 
+var socket = new Socket(game);
+
+setInterval(socket.send_input.bind(socket), 100);
+setInterval(game.loop.bind(game), 20);
+
+// Events
 
 document.onmousemove = function(evt) {
 	var rect = canvas.getBoundingClientRect();
@@ -15,16 +21,12 @@ document.onmousemove = function(evt) {
 };
 
 document.onclick = function(evt) {
-	game.shoot();
-	
+	if (game.player_tank) {
+		socket.send_bullet(game.player_id);
+	}
 }
 
 window.onresize = function(evt) {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 };
-
-var socket = new Socket(game);
-
-setInterval(socket.send_input.bind(socket), 100);
-setInterval(game.loop.bind(game), 20);

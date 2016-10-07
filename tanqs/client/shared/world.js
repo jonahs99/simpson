@@ -20,6 +20,13 @@ function World() {
 
 }
 
+World.prototype.reset = function() {
+
+	this.tanks = [];
+	this.bullets = [];
+
+}
+
 World.prototype.update = function() {
 
 	for (var i = 0; i < this.tanks.length; i++) {
@@ -40,7 +47,24 @@ World.prototype.update_bullets = function() {
 	for (var i = 0; i < this.bullets.length; i++) {
 
 		var bullet = this.bullets[i];
-		bullet.pos.madd(bullet.vel);
+
+		if (bullet.alive) {
+			bullet.pos.madd(bullet.vel);
+
+			if (!bullet.pos.in_BB(-1000,1000,-1000,1000)) {
+				if (bullet.richochet <= 0) {
+					bullet.alive = false;
+				} else {
+					if (bullet.pos.x < -1000 || bullet.pos.x > 1000) {
+						bullet.vel.x = -bullet.vel.x;
+					}
+					if (bullet.pos.y < -1000 || bullet.pos.y > 1000) {
+						bullet.vel.y = -bullet.vel.y;
+					}
+					bullet.richochet--;
+				}
+			}
+		}
 
 	}
 
@@ -66,6 +90,38 @@ World.prototype.kill_tank = function(id) {
 
 }
 
+World.prototype.add_bullet = function(bullet) {
+
+	for (var i = 0;; i++) {
+		if (this.bullets[i]) {
+			if (!this.bullets[i].alive) {
+				this.bullets[i] = bullet;
+				return;
+			}
+		} else {
+			this.bullets.push(bullet);
+			return;
+		}
+	}
+
+}
+
+World.prototype.shoot = function(id) {
+
+	var tank = this.tanks[id];
+
+	if (tank) {
+		var gun_pos = tank.pos.add(DirVec(tank.dir, tank.rad * 2));
+		var bullet = new Bullet(gun_pos);
+		bullet.vel = tank.vel.add(DirVec(tank.dir, bullet.speed));
+
+		this.add_bullet(bullet);
+	}
+
+	return bullet;
+
+}
+
 // Tank Class
 
 function Tank(alive) {
@@ -74,14 +130,14 @@ function Tank(alive) {
 
 	this.pos = new Vec2();
 	this.dir = 0;
-	this.rad = 20;
+	this.rad = 16;
 
 	// For interpolation
 	this.last_pos = new Vec2();
 	this.last_dir = 0;
 
 	this.wheelmass = 1;
-	this.maxforce = 2;
+	this.maxforce = 4;
 	this.maxspeed = 7;
 
 	this.target = new Vec2(0,4);
@@ -111,21 +167,27 @@ Tank.prototype.apply_wheel_force = function(f1, f2) {
 
 Tank.prototype.steer = function() {
 
+	/*	Some math going on here...
+
+		tank.target is the vector pointing in the direction of his players mouse
+		tanks are controlled with 2 tread (wheel) velocities
+		tank.steer() calculates desired wheel velocities based on target, then calculates torques to apply to each wheel
+
+	*/
+
 	var dir_vec = DirVec(this.dir);
 
 	var dot = dir_vec.unit().dot(this.target.unit());
-	var sdir = dir_vec.dot(this.target.norm()) > 0 ? false : true; // direction to steer (true = clockwise)
+	var sdir = dir_vec.dot(this.target.norm()) < 0; // direction to steer (true = clockwise)
 
-	//console.log(sdir);
-
-	var backwards = dot < 0;
+	var backwards = dot < 0; // go backwards if mouse vector points behind tank
 
 	if (backwards)
 		dot = -dot;
 
-	var a = 1 - dot;
-	if (dot < 0.99)
-		a += 0.2;
+	var a = clamp((1 - dot) * 2, 0, 2); // a is the desired difference in wheel velocity (0 if straight ahead, 2 if 90 deg for wheels in opposite directions)
+	//if (dot < 0.99)
+	//	a += 0.2;
 
 	var w1 = sdir ? this.maxspeed : this.maxspeed * (1 - a);
 	var w2 = sdir ? this.maxspeed * (1 - a) : this.maxspeed;
@@ -135,21 +197,29 @@ Tank.prototype.steer = function() {
 		w2 = -w2;
 	}
 
-	var speed = clamp(this.target.mag() / 200, 0, 1);
+	var speed = clamp(this.target.mag() / 200, 0, 1); // scale the speed down if the mouse is close to the tank
 	w1 *= speed;
 	w2 *= speed;
 
-	var f1 = (w1 - this.wheel1) / 2 / this.maxspeed * this.maxforce;
-	var f2 = (w2 - this.wheel2) / 2 / this.maxspeed * this.maxforce;
+	var f1 = (w1 - this.wheel1) / 2 / this.maxspeed * this.maxforce; // apply a force to the wheels proportional
+	var f2 = (w2 - this.wheel2) / 2 / this.maxspeed * this.maxforce; // to the difference in desired/actual velocities
 
 	this.apply_wheel_force(f1, f2);
 
 };
 
-function Bullet(pos, vel) {
+// Bullet class
+
+function Bullet(pos) {
+
+	this.alive = true; // bullets die when hit something/ out of bounds, then we can reclaim the memory for new bullets
+	this.richochet = 5; // times left bullet will richochet
 
 	this.pos = pos;
-	this.vel = vel;
+
+	this.speed = 9;
+	this.vel = new Vec2();
+
 }
 
 // Vector class and Vector math
@@ -232,6 +302,9 @@ Vec2.prototype.manhattan = function() {
 };
 Vec2.prototype.lerp = function(b, delta) {
 	return this.scale(1 - delta).add(b.scale(delta));
+};
+Vec2.prototype.in_BB = function(x1, x2, y1, y2) {
+	return (this.x >= x1) && (this.x <= x2) && (this.y >= y1) && (this.y <= y2);
 };
 
 

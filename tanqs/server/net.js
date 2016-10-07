@@ -44,10 +44,8 @@ exports.Net.prototype.on_input = function(socket, msg) {
 }
 
 exports.Net.prototype.on_bullet = function(socket, msg) {
-	var bullet = new world.Bullet(new world.Vec2(msg.x, msg.y), new world.Vec2(msg.vx, msg.vy));
-	this.simulation.world.bullets.push(bullet);
-
-	this.newbullets.push(msg);
+	var bullet = this.simulation.world.shoot(msg.id);
+	this.newbullets.push( {x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y} );
 }
 
 // To clients
