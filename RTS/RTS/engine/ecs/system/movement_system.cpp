@@ -7,9 +7,7 @@ MovementSystem::MovementSystem(Manager * manager) :
 	BaseSystem{ manager },
 	translate_components{ add_dependency<TranslateComponent>() },
 	movement_components{ add_dependency<MovementComponent>() }
-{
-	manager->add_system(this);
-}
+{ }
 
 void MovementSystem::update() {
 

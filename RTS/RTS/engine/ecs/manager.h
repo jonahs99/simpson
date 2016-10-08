@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <tuple>
 #include <memory>
 #include <typeindex>
 #include <string>
@@ -10,10 +11,16 @@
 #include <type_traits>
 
 #include "capacity.h"
-#include "component\component_list.h"
 
 class BaseSystem;
 
+template <class... C>
+struct ComponentTypeList { };
+
+template <class... S>
+struct SystemTypeList { };
+
+template < ComponentTypeList<class... C>, SystemTypeList<class... S> >
 class Manager {
 
 public :
@@ -21,32 +28,40 @@ public :
 	using EntityHandle = unsigned int;
 	using ComponentSignature = std::bitset<Capacity::n_components_max>;
 
-	template <class... T>
-	Manager(T... ) { create_component_lists<T...>(); };
+	template <class T>
+	using ComponentList = std::array<T, Capacity::n_entities_max>;
 
-	~Manager() {
-		for (auto component_list : component_lists)
-			delete component_list.second;
-	};
+	Manager() { };
+
+	~Manager() { };
 
 	// Entity
 
 	EntityHandle get_new_entity_handle();
 
+	EntityHandle get_new_template_handle();
+
 	void remove_entity(EntityHandle entity);
 
 	void add_entity(EntityHandle entity);
+
+	void copy_entity(EntityHandle entity, EntityHandle template_handle);
 
 	void set_entity_signature(EntityHandle entity, ComponentSignature signature) {
 		entity_signatures[entity] = signature;
 	};
 
 	// Component
-	
+
 	template <class T>
 	ComponentList<T> & get_component_list() {
-		return *dynamic_cast<ComponentList<T>*>(component_lists[std::type_index(typeid(T))]);
+		return std::get<T>(component_lists);
 	};
+
+	template <class T, class... Rest>
+	void set_components(T, Rest...) {
+
+	}
 
 	std::string components() {
 		std::string out = "Components: ";
@@ -60,9 +75,10 @@ public :
 	// System
 
 	template <class T>
-	typename std::enable_if<std::is_base_of<BaseSystem, T>::value, void>::type
-	add_system(T* system) {
+	T* create_system() {
+		T* system = new T(this);
 		systems[std::type_index(typeid(T))] = system;
+		return system;
 	}
 
 	template <class T>
@@ -79,20 +95,8 @@ public :
 
 private :
 
-	template <class T>
-	void create_component_lists() {
-		assert(component_lists.size() < Capacity::n_components_max);
-		component_signatures[std::type_index(typeid(T))] = ComponentSignature(1) << component_lists.size();
-		component_lists[std::type_index(typeid(T))] = new ComponentList<T>;
-	};
-
-	template <class T, class T1, class... rest>
-	void create_component_lists() {
-		create_component_lists<T>(); create_component_lists<T1, rest... >();
-	};
-
 	std::map<std::type_index, BaseSystem*> systems;
 
-	std::map<std::type_index, ComponentListBase*> component_lists;
+	std::tuple<ComponentList<C>... > component_lists;
 
 };

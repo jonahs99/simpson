@@ -2,7 +2,7 @@
 
 #include "ecs/manager.h"
 
-#include "ecs/system/movement_system.h"
+#include "ecs/system/render_system.h"
 
 #include "graphics\graphics.h"
 
@@ -24,9 +24,11 @@ private :
 
 	void init_systems() { };
 
-	Manager manager;
+	void define_templates();
 
-	MovementSystem movement_system;
+	Manager manager;
+	RenderSystem* render_system;
+
 
 	Graphics graphics;
 

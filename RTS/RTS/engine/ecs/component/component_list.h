@@ -4,6 +4,9 @@
 
 #include <array>
 
+template <class T>
+using ComponentList = std::array<T, Capacity::n_entities_max>;
+
 class ComponentListBase {
 public :
 	virtual ~ComponentListBase() { };

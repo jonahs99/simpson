@@ -42,9 +42,6 @@
     <ClInclude Include="engine\ecs\capacity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\ecs\assemblage\assemblage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="engine\ecs\component\translate_component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
