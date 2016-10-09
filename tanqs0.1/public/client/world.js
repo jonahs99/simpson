@@ -20,6 +20,12 @@ World.prototype.reset = function() {
 
 };
 
+World.prototype.update_bullets = function() {
+	for (var i = 0; i < this.bullets.length; i++) {
+		this.bullets[i].update();
+	}
+};
+
 World.prototype.update_tanks = function(msg) {
 
 	for (var i = 0; i < msg.length; i++) {
@@ -30,6 +36,7 @@ World.prototype.update_tanks = function(msg) {
 		if (tank_data.alive) {
 			tank.alive = true;
 			tank.rad = tank_data.rad;
+			tank.bullets = tank_data.bullets;
 			tank.current.pos.set(tank_data.pos);
 			tank.current.dir = tank_data.dir;
 			tank.old.pos.set(tank.draw.pos);
@@ -95,4 +102,8 @@ function Bullet(pos, vel, rad) {
 		this.vel.set(vel);
 	}
 
+}
+
+Bullet.prototype.update = function() {
+	this.pos.m_add(this.vel);
 }

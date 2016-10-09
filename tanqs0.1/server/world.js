@@ -45,19 +45,8 @@ World.prototype.kill_tank = function(id) {
 
 };
 
-World.prototype.add_bullet = function(tank) {
-
-	for (var i = 0; i < 72; i++) {
-		if (!this.bullets[i].alive) {
-			var bullet = new Bullet(tank);
-			tank.alive = true;
-			this.bullets[i] = bullet;
-			return i;
-		}
-	}
-
-	return -1;
-
+World.prototype.kill_bullet = function(bullet_id) {
+	this.bullets[bullet_id].alive = false;
 };
 
 World.prototype.shoot = function(tank_id) {
@@ -65,7 +54,16 @@ World.prototype.shoot = function(tank_id) {
 	var tank = this.tanks[tank_id];
 	if (tank.bullets > 0) {
 		tank.bullets--;
-		return this.add_bullet(tank);
+		for (var i = 0; i < 72; i++) {
+			if (!this.bullets[i].alive) {
+				var bullet = this.bullets[i];
+				bullet.alive = true;
+				bullet.tank = i;
+				bullet.pos.set_rt(tank.rad * 2, tank.dir).m_add(tank.pos); // Bullet starts at end of cannon
+				bullet.vel.set(tank.vel).m_add((new Vec2()).set_rt(this.speed, tank.dir))
+				return i;
+			}
+		}
 	}
 	return -1;
 
@@ -77,6 +75,16 @@ World.prototype.update = function() {
 		if (tank.alive) {
 			tank.steer();
 			tank.drive();
+		}
+	}
+	for (var i = 0; i < this.bullets.length; i++) {
+		var bullet = this.bullets[i];
+		if (bullet.alive) {
+			bullet.drive();
+			if (!bullet.pos.in_BB(-1000,-1000,1000,1000)) {
+				this.kill_bullet(i);
+				this.tanks[bullet.tank].bullets++;
+			}
 		}
 	}
 };
@@ -165,18 +173,18 @@ Tank.prototype.drive = function() { // Moves and rotates the tank according to w
 
 };
 
-function Bullet(tank) {
+function Bullet() {
 
-	this.speed = 10;
+	this.alive = false;
+	this.tank = -1;
 
-	if (tank) {
-		this.pos = (new Vec2()).set_rt(tank.rad * 2, tank.dir).m_add(tank.pos); // Bullet starts at end of cannon
-		this.vel = (new Vec2()).set(tank.vel).m_add((new Vec2()).set_rt(this.speed, tank.dir));
-	} else {
-		this.pos = new Vec2();
-		this.vel = new Vec2();
-	}
+	this.pos = new Vec2();
+	this.vel = new Vec2();
 
 	this.rad = 5;
 
 }
+
+Bullet.prototype.drive = function() {
+	this.pos.m_add(this.vel);
+};

@@ -64,10 +64,10 @@ Game.prototype.set_player = function(id) {
 Game.prototype.update = function() {
 
 	if (this.state == GameState.GAME) {
-
 		this.player_tank.steer_target = {x:this.mouse.x - this.canvas.width / 2, y:this.mouse.y - this.canvas.height / 2};
-
 	}
+
+	this.world.update_bullets();
 
 };
 

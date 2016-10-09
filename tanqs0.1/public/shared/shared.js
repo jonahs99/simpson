@@ -49,6 +49,9 @@ Vec2.prototype.set_rt = function(r, t) {
 	return this;
 
 }
+Vec2.prototype.in_BB = function(x1, y1, x2, y2) {
+	return 
+}
 
 Vec2.prototype.mag = function() {
 

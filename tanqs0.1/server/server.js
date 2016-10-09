@@ -49,15 +49,16 @@ GameServer.prototype.update_clients = function() {
 		var bullet_id = this.world.shoot(this.frame_input.shots[i]);
 		if (bullet_id > -1) {
 			var bullet = this.world.bullets[bullet_id];
-			msg.shots.push({id: bullet_id, x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y});
+			msg.shots.push({id: bullet_id, tank: bullet.tank, x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y});
 		}
 	}
 	this.frame_input.shots = [];
 
 	for (var i = 0; i < 24; i++) {
 		var tank = this.world.tanks[i];
-		var tank_data = {id: i, alive: tank.alive, rad: tank.rad};
+		var tank_data = {id: i, alive: tank.alive, rad: tank.rad, bullets:0};
 		if (tank.alive) {
+			tank_data.bullets = tank.bullets;
 			tank_data.pos = {x: tank.pos.x, y: tank.pos.y};
 			tank_data.dir = tank.dir;
 		}
