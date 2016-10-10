@@ -1,6 +1,8 @@
 // The CLIENT's view of the world
 
-function World() {
+function World(game) {
+
+	this.game = game;
 
 	this.tanks = [];
 	this.bullets = [];
@@ -34,13 +36,19 @@ World.prototype.update_tanks = function(msg) {
 		var tank = this.tanks[tank_data.id];
 
 		if (tank_data.alive) {
-			tank.alive = true;
+			tank.name = tank_data.name;
 			tank.rad = tank_data.rad;
 			tank.bullets = tank_data.bullets;
 			tank.current.pos.set(tank_data.pos);
 			tank.current.dir = tank_data.dir;
-			tank.old.pos.set(tank.draw.pos);
-			tank.old.dir = tank.draw.dir;
+			if (tank.alive) {
+				tank.old.pos.set(tank.draw.pos);
+				tank.old.dir = tank.draw.dir;
+			} else {
+				tank.old.pos.set(tank.current.pos);
+				tank.old.dir = tank.current.dir;
+			}
+			tank.alive = true;
 		} else {
 			tank.alive = false;
 		}
@@ -52,19 +60,16 @@ World.prototype.update_tanks = function(msg) {
 World.prototype.add_bullets = function(msg) {
 
 	for (var i = 0; i < msg.length; i++) {
-
 		var bullet_data = msg[i];
 		var bullet = this.bullets[bullet_data.id];
-
-		//if (bullet_data.alive) {
+		if (bullet_data.alive) {
 			bullet.alive = true;
-			bullet.pos.set_xy(bullet_data.x, bullet_data.y);
 			bullet.vel.set_xy(bullet_data.vx, bullet_data.vy);
+			bullet.pos.set_xy(bullet_data.x, bullet_data.y).m_sub(bullet.vel.scale(this.game.time_step / 20));
 			bullet.rad = bullet_data.rad;
-		//} else {
-		//	bullet.alive = false;
-		//}
-
+		} else {
+			bullet.alive = false;
+		}
 	}
 
 };

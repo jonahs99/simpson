@@ -14,6 +14,8 @@ function Renderer(game, canvas) {
 	this.canvas = canvas;
 	this.context = canvas.getContext('2d');
 
+	this.fpv = false; // Draw the world rotated to point tank up
+
 }
 
 Renderer.prototype.render_world = function() {
@@ -21,7 +23,7 @@ Renderer.prototype.render_world = function() {
 	// Calculate delta value for interpolation
 
 	var elapsed = (new Date()).getTime() - this.game.last_update_time;
-	var delta = clamp(elapsed / TIME_STEP, 0, 1.2); // Allow dead-reckoning for up to 0.2 time steps if necessary
+	var delta = clamp(elapsed / this.game.time_step, 0, 1.2); // Allow dead-reckoning for up to 0.2 time steps if necessary
 
 	// Clear the canvas
 	this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -32,8 +34,14 @@ Renderer.prototype.render_world = function() {
 	if (this.game.state == GameState.GAME) {
 		this.game.player_tank.lerp_state(delta);
 		this.game.camera.translate.set(this.game.player_tank.draw.pos).m_scale(-1);
+		if (this.fpv) {
+			this.game.camera.rotate = (-this.game.player_tank.draw.dir) - Math.PI / 2;
+		} else {
+			this.game.camera.rotate = 0;
+		}
 	}
 
+	this.context.rotate(this.game.camera.rotate);
 	this.context.translate(this.game.camera.translate.x, this.game.camera.translate.y);
 
 	//Draw the grid
@@ -65,6 +73,11 @@ Renderer.prototype.render_world = function() {
 		}
 	}
 
+	this.context.translate(-this.game.camera.translate.x, -this.game.camera.translate.y);
+
+	//Draw the leader_board
+	this.render_leaderboard();
+
 };
 
 Renderer.prototype.render_tank = function(tank, delta) {
@@ -74,7 +87,7 @@ Renderer.prototype.render_tank = function(tank, delta) {
 	this.context.translate(tank.draw.pos.x, tank.draw.pos.y);
 	this.context.rotate(tank.draw.dir);
 
-	this.context.fillStyle = '#f28';
+	this.context.fillStyle = '#06f';//'#f28';
 	this.context.lineWidth = 4;
 	this.context.strokeStyle = '#444';
 	this.context.lineJoin = 'round';
@@ -92,6 +105,13 @@ Renderer.prototype.render_tank = function(tank, delta) {
 	this.context.stroke();
 
 	this.context.rotate(-tank.draw.dir);
+
+	this.context.fillStyle = '#fff';
+	this.context.font = "16px Open Sans";
+	this.context.textAlign = "center";
+	this.context.textBaseline = "middle";
+	this.context.fillText(tank.name, 0, tank.rad * 3);
+
 	this.context.translate(-tank.draw.pos.x, -tank.draw.pos.y);
 
 	/*this.context.fillStyle = 'red';
@@ -99,7 +119,7 @@ Renderer.prototype.render_tank = function(tank, delta) {
 	this.context.fillStyle = 'blue';
 	this.context.fillRect(tank.old.pos.x - 4, tank.old.pos.y - 4, 8, 8);*/
 
-}
+};
 
 Renderer.prototype.render_bullet = function(bullet) {
 
@@ -112,4 +132,19 @@ Renderer.prototype.render_bullet = function(bullet) {
 	this.context.fill();
 	this.context.stroke();
 
-}
+};
+
+Renderer.prototype.render_leaderboard = function() {
+
+	this.context.fillStyle = '#fff';
+	this.context.font = "24px Open Sans";
+	this.context.textAlign = "left";
+	this.context.textBaseline = "middle";
+
+	for (var i = 0; i < this.game.leaderboard.length; i++) {
+		var client = this.game.leaderboard[i];
+		var text = client.name + " - K:" + client.stats.kills + " D:" + client.stats.deaths;
+		this.context.fillText(text, 500, -300 + 40 * i);
+	}
+
+};

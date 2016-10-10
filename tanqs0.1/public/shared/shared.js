@@ -50,8 +50,8 @@ Vec2.prototype.set_rt = function(r, t) {
 
 }
 Vec2.prototype.in_BB = function(x1, y1, x2, y2) {
-	return 
-}
+	return (this.x >= x1) && (this.x <= x2) && (this.y >= y1) && (this.y <= y2);
+};
 
 Vec2.prototype.mag = function() {
 
@@ -78,6 +78,14 @@ Vec2.prototype.m_norm = function() {
 	this.y = x;
 	return this;
 
+};
+
+Vec2.prototype.m_rotate = function(a) {
+	var cs = Math.cos(a);
+	var sn = Math.sin(a);
+	var px = this.x * cs - this.y * sn;
+	var py = this.x * sn + this.y * cs;
+	this.set_xy(px, py);
 };
 
 Vec2.prototype.m_scale = function(a) {
@@ -129,6 +137,12 @@ Vec2.prototype.m_clampxy = function(x1, x2, y1, y2) {
 Vec2.prototype.unit = function() {
 
 	return (new Vec2()).set(this).m_unit();
+
+};
+
+Vec2.prototype.scale = function(a) {
+
+	return (new Vec2()).set(this).m_scale(a);
 
 };
 

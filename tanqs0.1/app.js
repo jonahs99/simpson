@@ -18,15 +18,4 @@ http.listen(server_port, function(){
 var GameServer = require('./server/server.js');
 
 var server = new GameServer(http);
-
-var ms_frame = 20;
-var frames_update = 3;
-var frame = 0;
-
-setInterval(function() {
-	server.world.update.bind(server.world)();
-	if (frame % frames_update == 0) {
-		server.update_clients.bind(server)();
-	}
-	frame++;
-}, ms_frame);
+server.begin();
