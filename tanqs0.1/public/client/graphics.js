@@ -93,7 +93,7 @@ Renderer.prototype.render_tank = function(tank, delta) {
 	this.context.rotate(tank.draw.dir);
 
 	this.context.fillStyle = '#06f';//'#f28';
-	this.context.lineWidth = 4;
+	this.context.lineWidth = 3;
 	this.context.strokeStyle = '#444';
 	this.context.lineJoin = 'round';
 

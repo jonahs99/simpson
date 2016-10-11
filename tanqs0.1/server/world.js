@@ -47,7 +47,7 @@ World.prototype.free_tank = function(id) {
 World.prototype.spawn_tank = function(id) {
 	var tank = this.tanks[id];
 	tank.alive = true;
-	tank.max_bullets = 2;
+	tank.max_bullets = 3;
 	tank.reload_ticks = 125;
 
 	for (var i = 0; i < tank.max_bullets; i++) {
