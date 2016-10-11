@@ -42,7 +42,7 @@ Game.prototype.change_state = function(state) {
 		splash.style.visibility = 'visible';
 
 		splash_text.innerHTML = "tanqs.io";
-		splash_button.value = "Join!";
+		splash_button.value = "join";
 
 	} else if (state == GameState.GAME) {
 
