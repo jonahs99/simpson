@@ -96,7 +96,7 @@ function Tank() {
 Tank.prototype.lerp_state = function(delta) {
 	this.draw.pos.set_lerp(this.old.pos, this.current.pos, delta);
 	this.draw.dir = lerp(this.old.dir, this.current.dir, delta);
-}
+};
 
 function Bullet(pos, vel, rad) {
 
@@ -117,4 +117,4 @@ function Bullet(pos, vel, rad) {
 
 Bullet.prototype.update = function() {
 	this.pos.m_add(this.vel);
-}
+};
