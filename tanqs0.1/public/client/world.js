@@ -38,7 +38,7 @@ World.prototype.update_tanks = function(msg) {
 		if (tank_data.alive) {
 			tank.name = tank_data.name;
 			tank.rad = tank_data.rad;
-			tank.bullets = tank_data.bullets;
+
 			tank.current.pos.set(tank_data.pos);
 			tank.current.dir = tank_data.dir;
 			if (tank.alive) {
@@ -48,6 +48,12 @@ World.prototype.update_tanks = function(msg) {
 				tank.old.pos.set(tank.current.pos);
 				tank.old.dir = tank.current.dir;
 			}
+
+			if (tank == this.game.player_tank) {
+				tank.reload = tank_data.reload;
+				tank.reload_ticks = tank_data.reload_ticks;
+			}
+
 			tank.alive = true;
 		} else {
 			tank.alive = false;

@@ -106,12 +106,13 @@ GameServer.prototype.tank_update_msg = function() {
 	var msg = [];
 	for (var i = 0; i < this.world.n_tanks; i++) {
 		var tank = this.world.tanks[i];
-		var tank_data = {id: i, alive: tank.alive, rad: tank.rad, bullets:0};
+		var tank_data = {id: i, alive: tank.alive, rad: tank.rad};
 		if (tank.alive) {
 			tank_data.name = tank.client.name;
-			tank_data.bullets = tank.bullets;
 			tank_data.pos = {x: tank.pos.x, y: tank.pos.y};
 			tank_data.dir = tank.dir;
+			tank_data.reload = tank.reload;
+			tank_data.reload_ticks = tank.reload_ticks;
 		}
 		msg.push(tank_data);
 	}
@@ -125,7 +126,7 @@ GameServer.prototype.bullet_update_msg = function() {
 		var bullet_id = this.world.shoot(this.frame_input.shots[i]);
 		if (bullet_id > -1) {
 			var bullet = this.world.bullets[bullet_id];
-			msg.push({id: bullet_id, alive: true, tank: this.frame_input.shots[i], x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y});
+			msg.push({id: bullet_id, alive: true, tank: this.frame_input.shots[i], x: bullet.pos.x, y: bullet.pos.y, vx: bullet.vel.x, vy: bullet.vel.y, rad: bullet.rad});
 		} 
 	}
 	this.frame_input.shots = [];

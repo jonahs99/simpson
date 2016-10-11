@@ -53,8 +53,8 @@ Game.prototype.change_state = function(state) {
 		splash_input.style.display = 'none';
 		splash.style.visibility = 'visible';
 
-		splash_text.innerHTML = "Killed x(";
-		splash_button.value = "Respawn!";
+		splash_text.innerHTML = "you got blown up ;>";
+		splash_button.value = "respawn";
 
 	}
 
@@ -81,6 +81,13 @@ Game.prototype.update = function() {
 			this.player_tank.steer_target.set_xy(this.mouse.x - this.canvas.width / 2, this.mouse.y - this.canvas.height / 2);
 			if (this.renderer.fpv) {
 				this.player_tank.steer_target.m_rotate(-this.camera.rotate);
+			}
+			if (this.player_tank.reload) {
+				for (var i = 0; i < this.player_tank.max_bullets; i++) {
+					if (this.player_tank.reload[i] < this.player_tank.reload_ticks) {
+						this.player_tank.reload[i]++;
+					}
+				}
 			}
 		}
 	}

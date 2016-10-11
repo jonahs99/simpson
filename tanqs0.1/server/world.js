@@ -47,7 +47,13 @@ World.prototype.free_tank = function(id) {
 World.prototype.spawn_tank = function(id) {
 	var tank = this.tanks[id];
 	tank.alive = true;
-	tank.bullets = 3;
+	tank.max_bullets = 2;
+	tank.reload_ticks = 125;
+
+	for (var i = 0; i < tank.max_bullets; i++) {
+		tank.reload[i] = tank.reload_ticks;
+	}
+
 	tank.pos.set_xy(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
 	tank.steer_target.set_xy(0, 0);
 };
@@ -61,31 +67,38 @@ World.prototype.kill_bullet = function(bullet_id) {
 	var bullet = this.bullets[bullet_id];
 	bullet.alive = false;
 	bullet.just_died = true;
-	var tank = this.tanks[bullet.tank];
-	if (tank.alive) {
-		tank.bullets = clamp(tank.bullets + 1, 0, tank.max_bullets);
-	}
 };
 
 World.prototype.shoot = function(tank_id) {
 
 	var tank = this.tanks[tank_id];
-	if (tank.alive && tank.bullets > 0) {
-		tank.bullets--;
-		for (var i = 0; i < 72; i++) {
-			var bullet = this.bullets[i];
-			if (!bullet.alive) {
-				bullet.alive = true;
-				bullet.life = 120;
-				bullet.tank = tank_id;
-				bullet.pos.set_rt(tank.rad * 2, tank.dir).m_add(tank.pos); // Bullet starts at end of cannon
-				bullet.vel.set_rt(bullet.speed, tank.dir).m_add(tank.vel);
-				return i;
+	if (tank.alive) {
+		for (var i = 0; i < tank.max_bullets; i++) {
+			if (tank.reload[i] == tank.reload_ticks) {
+				tank.reload[i] = 0;
+				return this.add_bullet(tank_id);
 			}
 		}
 	}
 	return -1;
 
+};
+
+World.prototype.add_bullet = function(tank_id) {
+	var tank = this.tanks[tank_id];
+	for (var i = 0; i < this.n_bullets; i++) {
+		var bullet = this.bullets[i];
+		if (!bullet.alive) {
+			bullet.alive = true;
+			bullet.life = tank.reload_ticks;
+			bullet.tank = tank_id;
+			bullet.pos.set_rt(tank.rad * 2, tank.dir).m_add(tank.pos); // Bullet starts at end of cannon
+			bullet.vel.set_rt(bullet.speed, tank.dir).m_add(tank.vel);
+			bullet.rad = 5;
+			return i;
+		}
+	}
+	return -1;
 };
 
 World.prototype.update = function() {
@@ -100,6 +113,13 @@ World.prototype.update_tanks = function() {
 		if (tank.alive) {
 			tank.steer();
 			tank.drive();
+
+			for (var j = 0; j < tank.max_bullets; j++) {
+				if (tank.reload[j] < tank.reload_ticks) {
+					tank.reload[j]++;
+				}
+			}
+
 		}
 	}
 };
@@ -160,8 +180,9 @@ function Tank() {
 	this.left_wheel = 0; // Velocity of each wheel
 	this.right_wheel = 0;
 
-	this.max_bullets = 3;
-	this.bullets = 0; // bullets in chamber ( restock when the bullets die )
+	this.max_bullets = 0;
+	this.reload_ticks = 0;
+	this.reload = [];
 
 	// Configuration
 

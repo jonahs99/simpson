@@ -78,6 +78,11 @@ Renderer.prototype.render_world = function() {
 	//Draw the leader_board
 	this.render_leaderboard();
 
+	//Draw UI
+	if (this.game.state == GameState.GAME) {
+		this.render_ui();
+	}
+
 };
 
 Renderer.prototype.render_tank = function(tank, delta) {
@@ -110,7 +115,9 @@ Renderer.prototype.render_tank = function(tank, delta) {
 	this.context.font = "16px Open Sans";
 	this.context.textAlign = "center";
 	this.context.textBaseline = "middle";
-	this.context.fillText(tank.name, 0, tank.rad * 3);
+	if (!this.game.player_tank || tank.name != this.game.player_tank.name) {
+		this.context.fillText(tank.name, 0, tank.rad * 3);	
+	}
 
 	this.context.translate(-tank.draw.pos.x, -tank.draw.pos.y);
 
@@ -123,12 +130,12 @@ Renderer.prototype.render_tank = function(tank, delta) {
 
 Renderer.prototype.render_bullet = function(bullet) {
 
-	this.context.fillStyle = '#893DCC';
+	this.context.fillStyle = '#B076CC';
 	this.context.lineWidth = 3;
-	this.context.strokeStyle = '#B076CC';
+	this.context.strokeStyle = '#893DCC';
 
 	this.context.beginPath();
-	this.context.arc(bullet.pos.x, bullet.pos.y, 5, 0, 2*Math.PI);
+	this.context.arc(bullet.pos.x, bullet.pos.y, bullet.rad, 0, 2*Math.PI);
 	this.context.fill();
 	this.context.stroke();
 
@@ -137,14 +144,64 @@ Renderer.prototype.render_bullet = function(bullet) {
 Renderer.prototype.render_leaderboard = function() {
 
 	this.context.fillStyle = '#fff';
-	this.context.font = "24px Open Sans";
-	this.context.textAlign = "left";
+	this.context.font = "20px Open Sans";
+	this.context.textAlign = "right";
 	this.context.textBaseline = "middle";
 
 	for (var i = 0; i < this.game.leaderboard.length; i++) {
 		var client = this.game.leaderboard[i];
-		var text = client.name + " - K:" + client.stats.kills + " D:" + client.stats.deaths;
-		this.context.fillText(text, 500, -300 + 40 * i);
+		var text = client.name + " - K:[" + client.stats.kills + "] D:[" + client.stats.deaths + "]";
+		this.context.fillText(text, this.canvas.width/2-20, -this.canvas.height/2 + 20 + 30*i);
 	}
 
+};
+
+Renderer.prototype.render_ui = function() {
+
+	this.context.font = "40px Open Sans";
+	this.context.fillStyle = '#fff'
+	this.context.textAlign = "center";
+	this.context.textBaseline = "middle";
+	var text = this.game.player_tank.name;
+	this.context.fillText(text, 0, this.canvas.height/2-60);
+
+	var text_length = this.context.measureText(text).width;
+	this.render_reload_bars(text_length);
+
+};
+
+Renderer.prototype.render_reload_bars = function(text_length) {
+	if (!this.game.player_tank.reload) return;
+
+	this.context.lineWidth = 12;
+	this.context.lineCap = "round";
+	this.context.strokeStyle = '#eee';
+
+	var n_bars = this.game.player_tank.reload.length;
+	var length = 70;
+	var x = text_length/2 + 30;
+	var y = this.canvas.height/2 - 60;
+	var spacing = 14;
+	var height = y - (n_bars-1)*spacing/2;
+
+	for (var i = 0; i < this.game.player_tank.reload.length; i++) {
+		this.context.beginPath();
+		this.context.moveTo(x, height + spacing * i);
+		this.context.lineTo(x + length, height + spacing * i);
+		this.context.stroke();
+	}
+
+
+	this.context.lineWidth = 8;
+
+	for (var i = 0; i < this.game.player_tank.reload.length; i++) {
+		var x2 = x + this.game.player_tank.reload[i] / this.game.player_tank.reload_ticks * length;
+
+		this.context.strokeStyle = (this.game.player_tank.reload[i] == this.game.player_tank.reload_ticks)? '#3c3' : '#fc0';
+
+		this.context.beginPath();
+		this.context.moveTo(x, height + spacing * i);
+		this.context.lineTo(x2, height + spacing * i);
+		this.context.stroke();
+	}
 };
