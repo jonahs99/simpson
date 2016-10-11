@@ -143,14 +143,16 @@ Renderer.prototype.render_bullet = function(bullet) {
 
 Renderer.prototype.render_leaderboard = function() {
 
-	this.context.fillStyle = '#fff';
-	this.context.font = "20px Open Sans";
 	this.context.textAlign = "right";
 	this.context.textBaseline = "middle";
 
 	for (var i = 0; i < this.game.leaderboard.length; i++) {
 		var client = this.game.leaderboard[i];
 		var text = client.name + " - K:[" + client.stats.kills + "] D:[" + client.stats.deaths + "]";
+
+		this.context.fillStyle = i == 0 ? '#3c3' : '#fff';
+		this.context.font = (this.game.player_tank && this.game.player_tank.name == client.name) ? "bold 20px Open Sans" : "20px Open Sans";
+
 		this.context.fillText(text, this.canvas.width/2-20, -this.canvas.height/2 + 20 + 30*i);
 	}
 

@@ -96,4 +96,7 @@ Client.prototype.on_update = function(msg) {
 
 Client.prototype.on_who = function(msg) {
 	this.game.leaderboard = msg;
+	this.game.leaderboard.sort(function(a, b) {
+		return (a.stats.deaths + b.stats.kills - a.stats.kills - b.stats.deaths);
+	});
 };
